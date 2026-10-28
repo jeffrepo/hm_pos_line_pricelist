@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates id="template" xml:space="preserve">
+    <t t-name="hm_pos_line_pricelist.Orderline" t-inherit="point_of_sale.Orderline" t-inherit-mode="extension">
+        <xpath expr="//ul[hasclass('info-list')]" position="inside">
+            <li t-if="line.hmLinePricelistName" class="hm-line-pricelist small text-muted">
+                <i class="fa fa-tag me-1"/>Tarifa: <t t-esc="line.hmLinePricelistName"/>
+            </li>
+        </xpath>
+    </t>
+</templates>
