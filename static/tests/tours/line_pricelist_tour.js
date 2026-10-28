@@ -86,6 +86,28 @@ registry.category("web_tour.tours").add("hm_line_pricelist", {
                 order.removeOrderline(lotB);
                 equal(lotA.price_unit, 80, "deleting lot recomputes tier");
                 order.removeOrderline(lotA);
+                const lineModel = posmodel.models["pos.order.line"];
+                const comboProduct = posmodel.models["product.product"].find((product) => product.name === "HM Combo Product");
+                const parent = lineModel.create({
+                    product_id: comboProduct, order_id: order, qty: 1, price_unit: 0, price_type: "original",
+                });
+                const child = lineModel.create({
+                    product_id: line.product_id, order_id: order, qty: 1, price_unit: 90, price_type: "original",
+                    combo_parent_id: parent, combo_item_id: comboProduct.combo_ids[0].combo_item_ids[0],
+                });
+                parent.setLinePricelist(wholesale);
+                equal(child.price_unit, 80, "combo uses parent tariff");
+                equal(child.getDisplayData().hmLinePricelistName, "HM Wholesale", "combo child label");
+                order.removeOrderline(parent);
+                const refund = lineModel.create({
+                    product_id: line.product_id, order_id: order, qty: -1, price_unit: 80,
+                    price_type: "automatic", refunded_orderline_id: line,
+                });
+                equal(refund.line_pricelist_id.id, wholesale.id, "refund retains original tariff");
+                equal(refund.setLinePricelist(false), false, "refund tariff is protected");
+                order.set_pricelist(order.pricelist_id);
+                equal(refund.price_unit, 80, "refund retains original price");
+                order.removeOrderline(refund);
                 order.select_orderline(line);
                 await posmodel.syncAllOrders({ orders: [order] });
                 equal(typeof order.id, "number", "order was saved on server");

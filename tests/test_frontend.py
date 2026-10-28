@@ -15,6 +15,13 @@ class TestLinePricelistFrontend(TestPointOfSaleHttpCommon):
         cls.hm_lot_product = cls.hm_product.copy({
             "name": "HM Lot Product", "tracking": "lot", "is_storable": True,
         })
+        combo = cls.env["product.combo"].create({
+            "name": "HM Combo Choice",
+            "combo_item_ids": [Command.create({"product_id": cls.hm_product.id})],
+        })
+        cls.hm_product.copy({
+            "name": "HM Combo Product", "type": "combo", "combo_ids": [Command.link(combo.id)],
+        })
         lists = cls.env["product.pricelist"]
         for name, price in [("HM Retail", 100), ("HM Wholesale", 80), ("HM Promotion", 90)]:
             lists |= cls.env["product.pricelist"].create({

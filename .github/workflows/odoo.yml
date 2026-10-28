@@ -34,7 +34,7 @@ jobs:
       - name: Install Chrome for the POS browser test
         run: |
           apt-get update -qq
-          apt-get install -y --no-install-recommends ca-certificates curl
+          apt-get install -y --no-install-recommends ca-certificates curl python3-websocket
           curl -fsSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o /tmp/chrome.deb
           apt-get install -y /tmp/chrome.deb
       - name: Install module and run tests
@@ -49,6 +49,10 @@ jobs:
             --test-enable --test-tags=/hm_pos_line_pricelist \
             --stop-after-init --workers=0 --max-cron-threads=0 \
             --http-interface=127.0.0.1 --log-level=test 2>&1 | tee /tmp/odoo-test.log
+          if grep -q 'skipped TestLinePricelistFrontend' /tmp/odoo-test.log; then
+            echo 'The POS browser test must run, not be skipped.'
+            exit 1
+          fi
       - uses: actions/upload-artifact@v4
         if: always()
         with:
