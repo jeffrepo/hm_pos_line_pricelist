@@ -112,7 +112,7 @@ patch(PosOrderline.prototype, {
 
 patch(ProductProduct.prototype, {
     get_price(pricelist, quantity, price_extra = 0, recurring = false, list_price = false, original_line = false, related_lines = []) {
-        if (original_line?.isLotTracked() && original_line.order_id.lines.some((line) => line.line_pricelist_id)) {
+        if (original_line && original_line.isLotTracked() && original_line.order_id.lines.some((line) => line.line_pricelist_id)) {
             // Native lot pricing aggregates the whole product. Isolate tariff
             // groups so a different list cannot affect their quantity tier.
             const group = original_line.order_id.lines.filter((line) =>
