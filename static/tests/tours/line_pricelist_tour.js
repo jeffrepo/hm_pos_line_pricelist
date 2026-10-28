@@ -73,7 +73,7 @@ registry.category("web_tour.tours").add("hm_line_pricelist", {
                 equal(line.serialize().line_pricelist_id, wholesale.id, "offline serialization");
                 equal(line.serialize({ orm: true }).line_pricelist_id, wholesale.id, "server serialization");
 
-                const lotProduct = posmodel.models["product.product"].find((product) => product.name === "HM Lot Product");
+                const lotProduct = posmodel.models["product.product"].find((product) => product.display_name === "HM Lot Product");
                 const lotA = await posmodel.addLineToOrder({ product_id: lotProduct }, order, { merge: false }, false);
                 lotA.setLinePricelist(wholesale);
                 lotA.set_quantity(9);
@@ -87,7 +87,7 @@ registry.category("web_tour.tours").add("hm_line_pricelist", {
                 equal(lotA.price_unit, 80, "deleting lot recomputes tier");
                 order.removeOrderline(lotA);
                 const lineModel = posmodel.models["pos.order.line"];
-                const comboProduct = posmodel.models["product.product"].find((product) => product.name === "HM Combo Product");
+                const comboProduct = posmodel.models["product.product"].find((product) => product.display_name === "HM Combo Product");
                 const parent = lineModel.create({
                     product_id: comboProduct, order_id: order, qty: 1, price_unit: 0, price_type: "original",
                 });
